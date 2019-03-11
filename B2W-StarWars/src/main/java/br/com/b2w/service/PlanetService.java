@@ -21,8 +21,8 @@ public class PlanetService {
 	private PlanetRepository productRepository;
 
 	@Transactional
-	public void add(Planet product) {
-		productRepository.save(product);
+	public void add(Planet planet) {
+		productRepository.save(planet);
 	}
 	
 	@Transactional

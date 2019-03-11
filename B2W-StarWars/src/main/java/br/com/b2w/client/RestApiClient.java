@@ -1,6 +1,7 @@
 package br.com.b2w.client;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,10 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.b2w.model.PlanetParent;
+
 public class RestApiClient {
 	
 	@SuppressWarnings("static-access")
-	public ResponseEntity<?> getPlanetsAPI(){
+	public List<PlanetParent> getPlanetsAPI(){
 		
 	    final String uri = "https://swapi.co/api/planets";
 	     
@@ -23,11 +29,13 @@ public class RestApiClient {
 	    headers.set("User-Agent", "SWAPI-Java-Client/1.0");
 	    HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 	     
-	    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+	    ResponseEntity<PlanetParent> result = restTemplate.exchange(uri, HttpMethod.GET, entity, PlanetParent.class);
 	     
-	    System.out.println(result.getBody());
-	    
-	    return result.ok(result.getBody());
-	}
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
+	    PlanetParent[] planets = objectMapper.convertValue(result.getBody(), PlanetParent[].class);
+	    
+	    return Arrays.asList(planets);
+	}
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.b2w.client.RestApiClient;
 import br.com.b2w.model.Planet;
+import br.com.b2w.model.PlanetParent;
 import br.com.b2w.service.PlanetService;
 
 @RestController
@@ -50,7 +51,7 @@ public class RestApiController {
 		
 		planetService.deleteById(id);
 		
-		return ResponseEntity.ok("delete");
+		return ResponseEntity.ok("Exclusão Efetuada com Sucesso!");
 	}
 	
 	@GetMapping(value = "/listPlanetsAPI", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,9 +59,37 @@ public class RestApiController {
 		
 		RestApiClient apiClient =  new RestApiClient();
 		
-		ResponseEntity<?> JSON =  apiClient.getPlanetsAPI();
+		List<PlanetParent> planets =  apiClient.getPlanetsAPI();
 		
-		return JSON;
+		return planets.isEmpty()? ResponseEntity.notFound().build() : ResponseEntity.ok(planets);
+	}
+	
+	@GetMapping(value = "/insertPlanetsAPI", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> insertPlanetsAPI(){
+		
+		RestApiClient apiClient =  new RestApiClient();
+		List<PlanetParent> planets =  apiClient.getPlanetsAPI();
+		
+		planets.forEach(p -> {
+			p.getResults().forEach(r -> {
+				
+				String id = r.getUrl().replace("https://swapi.co/api/planets/", "").replaceAll("/", "");
+				
+				Planet planet = new Planet();
+				planet.setId(new Long(id));
+				planet.setNome(r.getName());
+				planet.setTerreno(r.getTerrain());
+				planet.setClima(r.getClimate());
+				planet.setAparicoes(r.getFilms().size());
+				
+				planetService.add(planet);				
+			});
+		});
+		
+		
+		return planets.isEmpty() ? 
+				ResponseEntity.notFound().build() : 
+				ResponseEntity.ok("Planetas Inseridos com Sucesso!");
 	}
 
 }
