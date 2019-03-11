@@ -9,11 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.b2w.model.Planet;
 import br.com.b2w.repository.PlanetRepository;
 
-/** 
- * Service layer.
- * Specify transactional behavior and mainly
- * delegate calls to Repository.
- */
 @Component
 public class PlanetService {
 

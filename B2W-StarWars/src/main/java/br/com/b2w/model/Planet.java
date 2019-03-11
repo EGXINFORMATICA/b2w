@@ -4,10 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/** 
- * 	This is a data structure, so
- *  fields can be public. (Clean-Code)
- */
 @Entity
 @Table(name="planet" ,schema = "b2w")
 public class Planet {
